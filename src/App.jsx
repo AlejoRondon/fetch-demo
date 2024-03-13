@@ -22,11 +22,10 @@ function App() {
     console.log("page changes to ", page);
     
     (async()=>{
-      const response = await axiosInstance.get(`/pokemon?offset=${(page - 1) * pokemonsPerPage}&limit=${pokemonsPerPage}`);
-      let pokelistData = response.data.results
-
       try {
-        pokelistData = await fetchAndAddImgUrls(pokelistData);
+        const response = await axiosInstance.get(`/pokemon?offset=${(page - 1) * pokemonsPerPage}&limit=${pokemonsPerPage}`);
+
+        let pokelistData = await fetchAndAddImgUrls(response.data.results);
         setPokeList(pokelistData)
 
       } catch (error) {
@@ -49,7 +48,7 @@ function App() {
     const data = await axiosInstance.get(url)
     setSelectedPoke({img: data.data.sprites.front_default, stats:data.data.stats})
   }
-  
+
   const getPokemonList = ()=> {
     return pokeList.map((pokemon)=>{
       return {

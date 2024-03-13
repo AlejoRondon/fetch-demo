@@ -18,31 +18,32 @@ function App() {
   const [page, setPage] = useState(1);
   const [isDarkMode, setIsDarkMode] = useState(false)
 
-  useEffect(()=>{
-    console.log("page changes to ", page);
+  useEffect(() => {
+    console.log("Page changed to", page);
     
-    (async()=>{
+    const fetchData = async () => {
       try {
         const response = await axiosInstance.get(`/pokemon?offset=${(page - 1) * pokemonsPerPage}&limit=${pokemonsPerPage}`);
-
-        let pokelistData = await fetchAndAddImgUrls(response.data.results);
-        setPokeList(pokelistData)
-
+        const pokelistData = await fetchAndAddImgUrls(response.data.results);
+        setPokeList(pokelistData);
       } catch (error) {
         console.error('Error fetching pokemons information:', error);
       }
-    })()
-
-    // Function to fetch image data from URLs
-    async function fetchAndAddImgUrls(pokelist_temp) {
-      return await Promise.all(
-        pokelist_temp.map(async (pokemon) => {
-          const { data } = await axiosInstance.get(pokemon.url);
-          return { name: pokemon.name, url: pokemon.url, img_url: data.sprites.front_default };
-        })
-      );
-    }
-  }, [page])
+    };
+  
+    fetchData();
+  
+  }, [page]);
+  
+  // Function to fetch image data from URLs
+  const fetchAndAddImgUrls = async (pokelist_temp) => {
+    return Promise.all(
+      pokelist_temp.map(async (pokemon) => {
+        const { data } = await axiosInstance.get(pokemon.url);
+        return { name: pokemon.name, url: pokemon.url, img_url: data.sprites.front_default };
+      })
+    );
+  };
 
   const getInfo = async (url)=> {
     const data = await axiosInstance.get(url)
